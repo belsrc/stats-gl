@@ -32,8 +32,9 @@ class Stats {
   query: WebGLQuery | null;
   disjoint: any;
   ns: any;
+  staticMax: boolean;
 
-  constructor( { logsPerSecond = 20, samplesLog = 100, samplesGraph = 10, precision = 2, minimal = false, horizontal = true, mode = 0 } = {} ) {
+  constructor( { logsPerSecond = 20, samplesLog = 100, samplesGraph = 10, precision = 2, minimal = false, horizontal = true, mode = 0, staticMax = false } = {} ) {
 
     this.mode = mode;
     this.horizontal = horizontal;
@@ -66,9 +67,10 @@ class Stats {
     };
 
     this.queryCreated = false;
+    this.staticMax = staticMax;
 
-    this.fpsPanel = this.addPanel( new Stats.Panel( 'FPS', '#0ff', '#002' ), 0 );
-    this.msPanel = this.addPanel( new Stats.Panel( 'CPU', '#0f0', '#020' ), 1 );
+    this.fpsPanel = this.addPanel( new Stats.Panel( 'FPS', '#0ff', '#002', this.staticMax ), 0 );
+    this.msPanel = this.addPanel( new Stats.Panel( 'CPU', '#0f0', '#020', this.staticMax ), 1 );
     this.gpuPanel = null;
 
     this.samplesLog = samplesLog;
@@ -91,10 +93,10 @@ class Stats {
     } else {
 
       window.addEventListener('resize', () =>{
-        
+
         this.resizePanel( this.fpsPanel, 0 );
         this.resizePanel( this.msPanel, 1 );
-  
+
         if (this.gpuPanel) {
           this.resizePanel( this.gpuPanel, 2 );
         }
@@ -124,13 +126,13 @@ class Stats {
       }
     }
   }
-    
+
   addPanel(panel: Panel, offset: number) {
 
     if(panel.canvas) {
 
       this.container.appendChild(panel.canvas);
-    
+
       this.resizePanel(panel, offset);
 
     }
@@ -160,7 +162,7 @@ class Stats {
     this.ext = this.gl ? this.gl.getExtension( 'EXT_disjoint_timer_query_webgl2' ) : null;
     if ( this.ext ) {
 
-      this.gpuPanel = this.addPanel( new Stats.Panel( 'GPU', '#ff0', '#220' ), 2 );
+      this.gpuPanel = this.addPanel( new Stats.Panel( 'GPU', '#ff0', '#220', this.staticMax ), 2 );
 
     }
 
